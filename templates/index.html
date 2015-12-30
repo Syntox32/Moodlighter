@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Moodlighter</title>
+
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='slider.css') }}">
+	<style type="text/css">
+
+* {
+	margin: 0;
+	padding: 0;
+}
+
+canvas {
+    margin: auto;
+    display: block;
+    width: auto;
+}
+
+body {
+	font-family: 'Open Sans', sans-serif;
+	background-color: #323232 !important;
+}
+
+
+.containers {
+	padding: 20px;
+	width: 500px;
+	display: flex;
+	flex-direction: row;
+	margin: auto;
+	} .containers .number {
+		width: 100px;
+		float: right;
+	} .containers .slider {
+		float: right;
+		padding: 0 10px 0 10px;
+		width: 300px !important;
+		background-color: #323232 !important;
+	} .containers .color-label {
+		text-align: center;
+		flex: 1;
+		font-size: 16pt;
+		color: #f1f1f1;
+	}
+
+.wrapper {
+	margin: auto;
+    width: 60%;
+}
+
+.form-contro {
+	color: #f1f1f1;
+	background-color: #565656;
+	border: 0px solid red;
+	border-radius: 3px;
+	padding: 5px;
+}
+
+.moodlighter {
+	color: #f1f1f1;
+	font-size: 32pt;
+	font-weight: bold;
+	text-align: center;
+}
+
+.status-label {
+	color: #717171;
+	font-size: 12pt;
+	padding-left: 5px;
+	text-align: center;
+	display: inline-block;
+}
+
+.status-wrapper {
+	margin: 0 auto;
+}
+
+	</style>
+	<script src="https://cdn.socket.io/socket.io-1.3.7.js"></script>
+</head>
+<body>
+
+<div class="wrapper">
+	<h2 class="moodlighter">Moodlighter</h2>
+	<div class="containers">
+		<div class="color-label">R</div>
+		<input class="slider" id="red-slider" type="range" min="0" max="255" value="0" step="1" oninput="sliderChanged(event, 'red');"/>
+		<input class="form-contro number" id="red-number" type="number" value="255" oninput="numberChanged(event, 'red');">
+	</div>
+	<div class="containers">
+		<div class="color-label">G</div>
+		<input class="slider" id="grn-slider" type="range" min="0" max="255" value="0" step="1" oninput="sliderChanged(event, 'grn');"/>
+		<input class="form-contro number" id="grn-number" type="number" value="0" oninput="numberChanged(event, 'grn');">
+	</div>
+	<div class="containers">
+		<div class="color-label">B</div>
+		<input class="slider" id="blu-slider" type="range" min="0" max="255" value="0" step="1" oninput="sliderChanged(event, 'blu');"/>
+		<input class="form-contro number" id="blu-number" type="number" value="0" oninput="numberChanged(event, 'blu');">
+	</div>
+	<div class="containers">
+	<!-- <h3></h3> -->
+		<canvas id="canvas"></canvas>
+	</div>
+	<div class="containers">
+		<div class="status-wrapper">
+			<div class="status-label">Status:</div>
+			<div class="status-label" id="status">Pending</div>
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+
+	var socket = io.connect("http://" + document.domain + ":" + location.port + "/socket");
+
+	var canvas = document.getElementById("canvas");
+	var ctx = canvas.getContext("2d");
+
+	var globalColor = {
+		r: 0,
+		b: 0,
+		g: 0
+	};
+
+	// drawCanvas();
+	
+	socket.on("sync", function(msg) {
+		setColorSettings(msg.color);
+	});
+
+	socket.on("on_connect", function(msg) {
+		var e = document.getElementById("status");
+		e.innerHTML = msg.data;
+		// console.log(msg.color);
+		setColorSettings(msg.color);
+	});
+
+	function setColorSettings(msg) {
+		var c = msg.split(":");
+		
+		globalColor.r = c[1];
+		globalColor.g = c[3];
+		globalColor.b = c[5];
+		
+		document.getElementById("red-number").value = globalColor.r;
+		document.getElementById("red-slider").value = globalColor.r;
+		document.getElementById("grn-number").value = globalColor.g;
+		document.getElementById("grn-slider").value = globalColor.g;
+		document.getElementById("blu-number").value = globalColor.b;
+		document.getElementById("blu-slider").value = globalColor.b;
+		
+		drawCanvas();
+	}
+
+
+	function sliderChanged(event, color) {
+		var val = event.target.value;
+		document.getElementById(color + "-number").value = val;
+		socket.emit("color change", { data: color + ":" + val.toString() });
+
+		switch(color) {
+			case "red": globalColor.r = val; break;
+			case "grn": globalColor.g = val; break;
+			case "blu": globalColor.b = val; break;
+		}
+
+		drawCanvas();
+	}
+
+	function numberChanged(event, color) {
+		var val = event.target.value;
+		document.getElementById(color + "-slider").value = val;
+		socket.emit("color change", { data: color + ":" + val.toString() });
+
+		switch(color) {
+			case "red": globalColor.r = val; break;
+			case "grn": globalColor.g = val; break;
+			case "blu": globalColor.b = val; break;
+		}
+
+		drawCanvas();
+	}
+
+	function drawCanvas() {
+		var colorStr = "rgb(" 
+			+ globalColor.r.toString() + ","
+			+ globalColor.g.toString() + ","
+			+ globalColor.b.toString() + ")";
+		ctx.fillStyle = colorStr;
+		var wi = parseInt(canvas.offsetWidth);
+		var hi = parseInt(canvas.offsetHeight);
+		// ctx.clearRect(0,0, wi, hi);
+		ctx.fillRect(0, 0, wi, hi);
+	}
+</script>
+</body>
+</html>
