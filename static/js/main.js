@@ -1,5 +1,8 @@
 
-var socket = io.connect("http://" + document.domain + ":" + location.port + "/socket");
+
+var socket = io.connect("http://" + document.domain + ":" + location.port + "/socket", {
+	'force new connection': true
+});
 
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
@@ -21,6 +24,11 @@ socket.on("on_connect", function(msg) {
 	e.innerHTML = msg.data;
 	// console.log(msg.color);
 	setColorSettings(msg.color);
+});
+
+socket.on("disconnect", function() {
+	var e = document.getElementById("status");
+	e.innerHTML = "Disconnected. Refresh and try again.";
 });
 
 function setColorSettings(msg) {
