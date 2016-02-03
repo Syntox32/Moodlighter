@@ -68,3 +68,29 @@ body {
 .status-wrapper {
 	margin: 0 auto;
 }
+
+
+@media screen and (max-width: 360px) {
+	.containers {
+		width: auto;
+		display: flex;
+		flex-direction: row;
+	}
+	canvas {
+		width: auto;
+	}
+	.containers .number {
+		width: 50px;
+		float: right;
+	}
+		.wrapper {
+		margin: 0;
+	    width: auto;
+	}
+	.containers .slider {
+		float: right;
+		padding: 0 10px 0 10px;
+		width: 300px !important;
+		background-color: #323232 !important;
+	}
+}
