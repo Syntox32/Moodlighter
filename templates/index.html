@@ -4,33 +4,29 @@
 	<title>Moodlighter</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-	<!-- <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"> -->
-	<!-- <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"> -->
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/slider.css') }}">
 	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
 	<script src="https://cdn.socket.io/socket.io-1.3.7.js"></script>
 </head>
 <body>
-
 <div class="wrapper">
 	<h2 class="moodlighter">Moodlighter</h2>
 	<div class="containers">
 		<div class="color-label">R</div>
-		<input class="slider" id="red-slider" type="range" min="0" max="255" value="0" step="5" oninput="sliderChanged(event, 'red');"/>
+		<input class="slider" id="red-slider" type="range" min="0" max="255" value="0" step="1" oninput="sliderChanged(event, 'red');"/>
 		<input class="form-contro number" id="red-number" type="number" value="255" oninput="numberChanged(event, 'red');">
 	</div>
 	<div class="containers">
 		<div class="color-label">G</div>
-		<input class="slider" id="grn-slider" type="range" min="0" max="255" value="0" step="5" oninput="sliderChanged(event, 'grn');"/>
+		<input class="slider" id="grn-slider" type="range" min="0" max="255" value="0" step="1" oninput="sliderChanged(event, 'grn');"/>
 		<input class="form-contro number" id="grn-number" type="number" value="0" oninput="numberChanged(event, 'grn');">
 	</div>
 	<div class="containers">
 		<div class="color-label">B</div>
-		<input class="slider" id="blu-slider" type="range" min="0" max="255" value="0" step="5" oninput="sliderChanged(event, 'blu');"/>
+		<input class="slider" id="blu-slider" type="range" min="0" max="255" value="0" step="1" oninput="sliderChanged(event, 'blu');"/>
 		<input class="form-contro number" id="blu-number" type="number" value="0" oninput="numberChanged(event, 'blu');">
 	</div>
 	<div class="containers">
-	<!-- <h3></h3> -->
 		<canvas id="canvas"></canvas>
 	</div>
 	<div class="containers">
@@ -40,7 +36,6 @@
 		</div>
 	</div>
 </div>
-
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

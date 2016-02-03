@@ -93,4 +93,7 @@ body {
 		width: 300px !important;
 		background-color: #323232 !important;
 	}
+	.moodlighter {
+		padding: 10px 0 10px;
+	}
 }
