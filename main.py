@@ -1,11 +1,17 @@
 #!/usr/bin/python3
 import math
+import platform
 from time import sleep
 from flask import Flask, render_template
 from flask.ext.socketio import SocketIO, emit
 
 NUM_LEDS = 31
-USE_LEDS = False
+USE_LEDS = True
+
+if platform.system().lower() == "windows":
+	# The lights aren't connected to my desktop
+	USE_LEDS = False
+	print("Warning: USE_LEDS disabled.")
 
 if USE_LEDS:
 	import ledstrip
@@ -62,7 +68,7 @@ def index():
 
 @socketio.on("color change", namespace="/socket")
 def color_change(message):
-	if message is not None and message["data"] is not None:
+	if message is not None or message["data"] is not None:
 		filter_message(message["data"])
 		emit("sync", { 
 			"color": "r:{0}:g:{1}:b:{2}".format(color.r, color.g, color.b)
